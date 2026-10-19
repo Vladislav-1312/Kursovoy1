@@ -1,0 +1,1114 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Система управления языковой школой</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Golos+Text:wght@400;500;600;700;800&family=Spectral:ital,wght@0,500;0,600;1,500;1,600&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --paper: #EEE8DC;
+            --surface: #FFFDF8;
+            --surface-2: #FBF7EF;
+            --ink: #231B17;
+            --muted: #5F5249;
+            --primary: #7A5336;
+            --primary-hover: #623F27;
+            --espresso: #2A201B;
+            --espresso-2: #3B2D25;
+            --brass: #B08A3E;
+            --brass-light: #D2AE63;
+            --line: #D9CFBD;
+            --line-soft: #ECE4D5;
+            --danger: #A33F2B;
+            --moss: #5A7D54;
+            --select: #EFE0BC;
+            --grain: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='160' height='160'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.8' numOctaves='2' stitchTiles='stitch'/%3E%3CfeColorMatrix values='0 0 0 0 .35 0 0 0 0 .25 0 0 0 0 .18 0 0 0 .08 0'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+            --serif: 'Spectral', 'Noto Serif', Georgia, 'Times New Roman', serif;
+            --sans: 'Golos Text', 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+            --ico-user: url("data:image/svg+xml,%3Csvg%20xmlns='http://www.w3.org/2000/svg'%20viewBox='0%200%2024%2024'%20fill='none'%20stroke='black'%20stroke-width='1.8'%20stroke-linecap='round'%20stroke-linejoin='round'%3E%3Ccircle%20cx='12'%20cy='8'%20r='4'/%3E%3Cpath%20d='M4%2021v-1a6%206%200%200%201%206-6h4a6%206%200%200%201%206%206v1'/%3E%3C/svg%3E");
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: var(--sans);
+        }
+
+        ::selection { background: var(--brass); color: #fff; }
+
+        body {
+            background: var(--grain), var(--paper);
+            color: var(--ink);
+            padding: clamp(14px, 3vw, 32px);
+            display: flex;
+            flex-direction: column;
+            min-height: 100vh;
+            font-size: 15px;
+            line-height: 1.5;
+            -webkit-font-smoothing: antialiased;
+        }
+
+        button, input, select { font-size: inherit; }
+
+        :focus-visible {
+            outline: 2px solid var(--brass);
+            outline-offset: 2px;
+        }
+
+        /* ================= ВХОД / РЕГИСТРАЦИЯ ================= */
+        .login-wrapper {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100vw;
+            height: 100vh;
+            background:
+                radial-gradient(ellipse at 18% 8%, rgba(176,138,62,.16), transparent 55%),
+                radial-gradient(ellipse at 92% 96%, rgba(122,83,54,.18), transparent 50%),
+                var(--grain), var(--paper);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 16px;
+            overflow: hidden;
+            z-index: 1000;
+        }
+
+        /* Стена приветствий на разных языках */
+        .login-wrapper::before {
+            content: "Hello      Привет      你好      Hallo\A       Bonjour      こんにちは      Hola\A Ciao      안녕하세요      Olá      Merhaba\A       Γεια σου      Hej      Cześć      Salve\A Hello      Привет      你好      Hallo\A       Bonjour      こんにちは      Hola\A Ciao      안녕하세요      Olá      Merhaba";
+            white-space: pre;
+            position: absolute;
+            top: -4%;
+            left: -4%;
+            font-family: var(--serif), 'Noto Serif JP', 'Hiragino Mincho ProN', 'Noto Serif KR', serif;
+            font-style: italic;
+            font-weight: 500;
+            font-size: clamp(44px, 7.2vw, 98px);
+            line-height: 1.18;
+            color: rgba(122, 83, 54, .10);
+            transform: rotate(-5deg);
+            transform-origin: top left;
+            pointer-events: none;
+            user-select: none;
+        }
+
+        .login-card {
+            position: relative;
+            z-index: 1;
+            background: var(--surface);
+            border: 1px solid var(--line);
+            border-radius: 18px;
+            padding: 42px 40px 36px;
+            width: 100%;
+            max-width: 430px;
+            text-align: center;
+            box-shadow:
+                inset 0 0 0 7px var(--surface),
+                inset 0 0 0 8px rgba(176, 138, 62, .55),
+                0 40px 70px -30px rgba(42, 32, 27, .5),
+                0 2px 6px rgba(42, 32, 27, .08);
+            animation: cardRise .8s cubic-bezier(.2, .7, .2, 1) both;
+        }
+
+        .login-card::before {
+            content: "Aa";
+            display: block;
+            width: 64px;
+            height: 64px;
+            line-height: 60px;
+            margin: 0 auto 18px;
+            border-radius: 50%;
+            border: 1px solid var(--brass);
+            background: var(--surface-2);
+            color: var(--primary);
+            font-family: var(--serif);
+            font-style: italic;
+            font-weight: 600;
+            font-size: 30px;
+            box-shadow: 0 0 0 6px rgba(176, 138, 62, .13);
+        }
+
+        @keyframes cardRise {
+            from { opacity: 0; transform: translateY(18px) scale(.985); }
+            to   { opacity: 1; transform: none; }
+        }
+
+        .auth-toggle {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 0 6px;
+            margin-bottom: 26px;
+            border-bottom: 1px solid var(--line);
+        }
+
+        /* Название и подзаголовок над переключателем */
+        .auth-toggle::before {
+            content: "Языковая школа";
+            order: -2;
+            flex: 0 0 100%;
+            font-family: var(--serif);
+            font-size: 30px;
+            font-weight: 600;
+            line-height: 1.15;
+            color: var(--ink);
+        }
+
+        .auth-toggle::after {
+            content: "Система управления";
+            order: -1;
+            flex: 0 0 100%;
+            margin: 4px 0 22px;
+            font-size: 14px;
+            color: var(--muted);
+        }
+
+        .auth-toggle-btn {
+            flex: 1;
+            padding: 8px 10px 12px;
+            border: none;
+            background: transparent;
+            font-family: var(--serif);
+            font-size: 20px;
+            font-weight: 600;
+            color: var(--muted);
+            cursor: pointer;
+            border-bottom: 3px solid transparent;
+            margin-bottom: -1px;
+            transition: color .2s ease, border-color .2s ease;
+        }
+
+        .auth-toggle-btn:hover { color: var(--ink); }
+
+        .auth-toggle-btn.active {
+            color: var(--ink);
+            border-bottom-color: var(--brass);
+        }
+
+        .auth-form { display: none; }
+        .auth-form.active { display: block; }
+
+        .form-group {
+            margin-bottom: 16px;
+            text-align: left;
+        }
+
+        .form-group label {
+            display: block;
+            font-size: 13px;
+            font-weight: 600;
+            margin-bottom: 6px;
+            color: var(--muted);
+        }
+
+        .form-group input, .form-group select {
+            width: 100%;
+            padding: 13px 15px;
+            border: 1px solid var(--line);
+            border-radius: 10px;
+            font-size: 15px;
+            outline: none;
+            background: var(--surface-2);
+            color: var(--ink);
+            transition: border-color .2s ease, box-shadow .2s ease, background .2s ease;
+        }
+
+        .form-group input::placeholder { color: #A39688; }
+
+        .form-group select {
+            appearance: none;
+            -webkit-appearance: none;
+            padding-right: 40px;
+            cursor: pointer;
+            background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='14' height='8' viewBox='0 0 14 8'%3E%3Cpath d='M1 1l6 6 6-6' fill='none' stroke='%237A5336' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E");
+            background-repeat: no-repeat;
+            background-position: right 14px center;
+        }
+
+        .form-group input:focus, .form-group select:focus {
+            border-color: var(--primary);
+            background-color: #fff;
+            box-shadow: 0 0 0 4px rgba(176, 138, 62, .2);
+        }
+
+        .auth-form .btn-full { margin-top: 10px; padding: 14px 18px; font-size: 15px; }
+
+        /* ================= РАБОЧЕЕ ПРОСТРАНСТВО ================= */
+        .app-container {
+            display: none;
+            flex-direction: column;
+            flex-grow: 1;
+            width: 100%;
+            max-width: 1280px;
+            margin: 0 auto;
+            animation: appIn .6s ease both;
+        }
+
+        /* JS включает экран через display:flex — превращаем его в сетку «меню + контент» */
+        .app-container[style*="flex"] {
+            display: grid !important;
+            grid-template-columns: 264px minmax(0, 1fr);
+            grid-template-rows: auto auto 1fr auto;
+            grid-template-areas:
+                "head head"
+                "nav  main"
+                "biz  main"
+                "foot foot";
+            gap: 20px 24px;
+        }
+
+        @keyframes appIn {
+            from { opacity: 0; }
+            to   { opacity: 1; }
+        }
+
+        /* Шапка */
+        .top-header {
+            grid-area: head;
+            background: linear-gradient(115deg, var(--espresso) 0%, var(--espresso-2) 100%);
+            border-radius: 18px;
+            border-bottom: 3px solid var(--brass);
+            padding: 16px 26px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            gap: 16px;
+            box-shadow: 0 20px 36px -24px rgba(42, 32, 27, .85);
+        }
+
+        .top-header h1 {
+            display: flex;
+            align-items: center;
+            gap: 14px;
+            font-family: var(--serif);
+            font-size: clamp(19px, 2.6vw, 25px);
+            font-weight: 600;
+            letter-spacing: .005em;
+            color: #F4ECDD;
+        }
+
+        .top-header h1::before {
+            content: "Aa";
+            flex-shrink: 0;
+            width: 42px;
+            height: 42px;
+            line-height: 40px;
+            text-align: center;
+            border-radius: 50%;
+            border: 1px solid var(--brass);
+            color: var(--brass-light);
+            font-family: var(--serif);
+            font-style: italic;
+            font-weight: 600;
+            font-size: 20px;
+            box-shadow: 0 0 0 4px rgba(176, 138, 62, .15);
+        }
+
+        .user-info {
+            display: flex;
+            align-items: center;
+            gap: 14px;
+            font-size: 14px;
+            font-weight: 500;
+            color: #E7DCC8;
+        }
+
+        .user-info #roleLabel {
+            display: inline-flex;
+            align-items: center;
+            gap: 9px;
+            padding: 7px 15px 7px 12px;
+            border: 1px solid rgba(231, 220, 200, .25);
+            border-radius: 999px;
+            background: rgba(255, 255, 255, .05);
+        }
+
+        .user-info #roleLabel::before {
+            content: "";
+            flex-shrink: 0;
+            width: 17px;
+            height: 17px;
+            background: var(--brass-light);
+            -webkit-mask: var(--ico-user) center / contain no-repeat;
+            mask: var(--ico-user) center / contain no-repeat;
+        }
+
+        .top-header .btn-outline {
+            color: #F4ECDD;
+            border-color: rgba(231, 220, 200, .4);
+        }
+
+        .top-header .btn-outline:hover {
+            background: rgba(255, 255, 255, .1);
+            border-color: var(--brass);
+        }
+
+        /* ---------- Боковое меню (вкладки) ---------- */
+        .tabs-container {
+            grid-area: nav;
+            align-self: start;
+            display: flex;
+            flex-direction: column;
+            gap: 3px;
+            padding: 14px 10px 12px;
+            background: var(--surface);
+            border: 1px solid var(--line);
+            border-radius: 18px;
+            box-shadow: 0 24px 40px -32px rgba(42, 32, 27, .55);
+        }
+
+        .tabs-container::before {
+            content: "Разделы";
+            padding: 2px 12px 10px;
+            font-size: 13px;
+            font-weight: 600;
+            color: var(--muted);
+        }
+
+        .tab-btn {
+            display: flex;
+            align-items: center;
+            gap: 13px;
+            width: 100%;
+            text-align: left;
+            background: transparent;
+            color: var(--muted);
+            border: none;
+            border-radius: 11px;
+            padding: 12px 14px;
+            font-size: 15px;
+            font-weight: 500;
+            cursor: pointer;
+            white-space: nowrap;
+            transition: color .2s ease, background .2s ease, box-shadow .2s ease;
+        }
+
+        .tab-btn::before {
+            content: "";
+            flex-shrink: 0;
+            width: 20px;
+            height: 20px;
+            background: currentColor;
+            color: var(--primary);
+            opacity: .75;
+            -webkit-mask: var(--i) center / contain no-repeat;
+            mask: var(--i) center / contain no-repeat;
+            transition: color .2s ease, opacity .2s ease;
+        }
+
+        .tab-btn:nth-child(1)::before { --i: url("data:image/svg+xml,%3Csvg%20xmlns='http://www.w3.org/2000/svg'%20viewBox='0%200%2024%2024'%20fill='none'%20stroke='black'%20stroke-width='1.8'%20stroke-linecap='round'%20stroke-linejoin='round'%3E%3Cpath%20d='M22%2010%2012%205%202%2010l10%205%2010-5z'/%3E%3Cpath%20d='M6%2012v5c3%202%209%202%2012%200v-5'/%3E%3C/svg%3E"); }
+        .tab-btn:nth-child(2)::before { --i: url("data:image/svg+xml,%3Csvg%20xmlns='http://www.w3.org/2000/svg'%20viewBox='0%200%2024%2024'%20fill='none'%20stroke='black'%20stroke-width='1.8'%20stroke-linecap='round'%20stroke-linejoin='round'%3E%3Ccircle%20cx='12'%20cy='8'%20r='4'/%3E%3Cpath%20d='M4%2021v-1a6%206%200%200%201%206-6h4a6%206%200%200%201%206%206v1'/%3E%3C/svg%3E"); }
+        .tab-btn:nth-child(3)::before { --i: url("data:image/svg+xml,%3Csvg%20xmlns='http://www.w3.org/2000/svg'%20viewBox='0%200%2024%2024'%20fill='none'%20stroke='black'%20stroke-width='1.8'%20stroke-linecap='round'%20stroke-linejoin='round'%3E%3Cpath%20d='M2%204h6a4%204%200%200%201%204%204v13a3%203%200%200%200-3-3H2z'/%3E%3Cpath%20d='M22%204h-6a4%204%200%200%200-4%204v13a3%203%200%200%201%203-3h7z'/%3E%3C/svg%3E"); }
+        .tab-btn:nth-child(4)::before { --i: url("data:image/svg+xml,%3Csvg%20xmlns='http://www.w3.org/2000/svg'%20viewBox='0%200%2024%2024'%20fill='none'%20stroke='black'%20stroke-width='1.8'%20stroke-linecap='round'%20stroke-linejoin='round'%3E%3Cpath%20d='M4%2021V4a1%201%200%200%201%201-1h10a1%201%200%200%201%201%201v17'/%3E%3Cpath%20d='M2%2021h20'/%3E%3Cpath%20d='M12.5%2012.5h.01'/%3E%3C/svg%3E"); }
+        .tab-btn:nth-child(5)::before { --i: url("data:image/svg+xml,%3Csvg%20xmlns='http://www.w3.org/2000/svg'%20viewBox='0%200%2024%2024'%20fill='none'%20stroke='black'%20stroke-width='1.8'%20stroke-linecap='round'%20stroke-linejoin='round'%3E%3Ccircle%20cx='9'%20cy='8'%20r='3.5'/%3E%3Cpath%20d='M2%2020a7%207%200%200%201%2014%200'/%3E%3Ccircle%20cx='17'%20cy='9'%20r='2.5'/%3E%3Cpath%20d='M17%2014a5%205%200%200%201%205%205'/%3E%3C/svg%3E"); }
+        .tab-btn:nth-child(6)::before { --i: url("data:image/svg+xml,%3Csvg%20xmlns='http://www.w3.org/2000/svg'%20viewBox='0%200%2024%2024'%20fill='none'%20stroke='black'%20stroke-width='1.8'%20stroke-linecap='round'%20stroke-linejoin='round'%3E%3Crect%20x='5'%20y='4'%20width='14'%20height='17'%20rx='2'/%3E%3Cpath%20d='M9%204h6v3H9z'/%3E%3Cpath%20d='m9%2014%202%202%204-4'/%3E%3C/svg%3E"); }
+        .tab-btn:nth-child(7)::before { --i: url("data:image/svg+xml,%3Csvg%20xmlns='http://www.w3.org/2000/svg'%20viewBox='0%200%2024%2024'%20fill='none'%20stroke='black'%20stroke-width='1.8'%20stroke-linecap='round'%20stroke-linejoin='round'%3E%3Crect%20x='2'%20y='5'%20width='20'%20height='14'%20rx='2'/%3E%3Cpath%20d='M2%2010h20'/%3E%3C/svg%3E"); }
+        .tab-btn:nth-child(8)::before { --i: url("data:image/svg+xml,%3Csvg%20xmlns='http://www.w3.org/2000/svg'%20viewBox='0%200%2024%2024'%20fill='none'%20stroke='black'%20stroke-width='1.8'%20stroke-linecap='round'%20stroke-linejoin='round'%3E%3Crect%20x='4'%20y='11'%20width='16'%20height='10'%20rx='2'/%3E%3Cpath%20d='M8%2011V7a4%204%200%200%201%208%200v4'/%3E%3C/svg%3E"); }
+
+        .tab-btn:hover:not(.active) {
+            color: var(--ink);
+            background: rgba(176, 138, 62, .10);
+        }
+
+        .tab-btn:hover:not(.active)::before { opacity: 1; }
+
+        .tab-btn.active {
+            color: var(--ink);
+            font-weight: 700;
+            background: #F3EAD4;
+            box-shadow: inset 4px 0 0 var(--brass);
+        }
+
+        .tab-btn.active::before { color: var(--brass); opacity: 1; }
+
+        /* ---------- Быстрые операции ---------- */
+        .business-buttons {
+            grid-area: biz;
+            align-self: start;
+            flex-direction: column;
+            gap: 10px;
+            padding: 18px 16px 16px;
+            background: linear-gradient(160deg, var(--espresso) 0%, var(--espresso-2) 100%);
+            border-radius: 18px;
+            box-shadow: 0 24px 40px -26px rgba(42, 32, 27, .85);
+        }
+
+        .business-buttons::before {
+            content: "Быстрые операции";
+            padding: 0 4px 6px;
+            font-family: var(--serif);
+            font-size: 19px;
+            font-weight: 600;
+            color: #F4ECDD;
+        }
+
+        .business-buttons .btn-primary {
+            justify-content: flex-start;
+            width: 100%;
+            padding: 14px 16px;
+            font-size: 14.5px;
+            background: var(--brass-light);
+            color: var(--ink);
+            border-color: transparent;
+            box-shadow: 0 10px 18px -12px rgba(0, 0, 0, .7);
+        }
+
+        .business-buttons .btn-primary:hover { background: #E0C07C; }
+
+        /* ---------- Главная карточка ---------- */
+        .main-card {
+            grid-area: main;
+            background: var(--surface);
+            border: 1px solid var(--line);
+            border-radius: 18px;
+            padding: 22px;
+            display: grid;
+            grid-template-columns: minmax(0, 1fr) auto;
+            grid-template-rows: auto minmax(0, 1fr);
+            align-content: start;
+            gap: 18px 16px;
+            box-shadow: 0 26px 46px -34px rgba(42, 32, 27, .55);
+        }
+
+        .search-row {
+            grid-column: 1;
+            grid-row: 1;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .action-buttons {
+            grid-column: 2;
+            grid-row: 1;
+            gap: 10px;
+        }
+
+        .action-buttons .btn-full {
+            flex: 0 0 auto;
+            width: auto;
+            padding: 11px 18px;
+        }
+
+        .table-wrapper {
+            grid-column: 1 / -1;
+            grid-row: 2;
+        }
+
+        .search-row label {
+            font-size: 14px;
+            font-weight: 600;
+            color: var(--muted);
+            white-space: nowrap;
+        }
+
+        .search-row input {
+            flex-grow: 1;
+            min-width: 0;
+            padding: 12px 18px;
+            border: 1px solid var(--line);
+            border-radius: 999px;
+            font-size: 14.5px;
+            outline: none;
+            background: var(--surface-2);
+            color: var(--ink);
+            transition: border-color .2s ease, box-shadow .2s ease, background .2s ease;
+        }
+
+        .search-row input::placeholder { color: #A39688; }
+
+        .search-row input:focus {
+            border-color: var(--primary);
+            background: #fff;
+            box-shadow: 0 0 0 4px rgba(176, 138, 62, .2);
+        }
+
+        /* ---------- Таблица ---------- */
+        .table-wrapper {
+            overflow: auto;
+            max-height: max(380px, calc(100vh - 340px));
+            border: 1px solid var(--line);
+            border-radius: 12px;
+            background: #fff;
+            scrollbar-width: thin;
+            scrollbar-color: var(--line) transparent;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: separate;
+            border-spacing: 0;
+            font-size: 14.5px;
+            text-align: left;
+        }
+
+        th {
+            position: sticky;
+            top: 0;
+            z-index: 1;
+            background: #F2EBDD;
+            color: var(--ink);
+            font-weight: 700;
+            font-size: 14px;
+            padding: 14px 18px;
+            white-space: nowrap;
+            border-bottom: 2px solid #DCCDA9;
+        }
+
+        td {
+            padding: 14px 18px;
+            border-bottom: 1px solid var(--line-soft);
+            color: var(--ink);
+            transition: background .15s ease;
+        }
+
+        tbody tr:last-child td { border-bottom: none; }
+
+        tbody tr { cursor: pointer; }
+        tbody tr:nth-child(even) { background: var(--surface-2); }
+        tbody tr:hover { background: #F5EEDF; }
+
+        td:first-child, th:first-child {
+            width: 1%;
+            white-space: nowrap;
+            font-variant-numeric: tabular-nums;
+        }
+
+        td:first-child { color: var(--muted); font-weight: 600; }
+
+        /* Выбранная строка (JS ставит инлайн-фон — перекрываем его заметным цветом) */
+        tbody tr[style*="background-color"] {
+            background-color: var(--select) !important;
+        }
+
+        tbody tr[style*="background-color"] td {
+            border-bottom-color: #E3CF9C;
+        }
+
+        tbody tr[style*="background-color"] td:first-child {
+            box-shadow: inset 5px 0 0 var(--brass);
+            color: var(--ink);
+            font-weight: 800;
+        }
+
+        /* ---------- Кнопки ---------- */
+        .btn {
+            padding: 11px 20px;
+            border: 1px solid transparent;
+            border-radius: 10px;
+            font-weight: 600;
+            font-size: 14px;
+            cursor: pointer;
+            transition: background .2s ease, color .2s ease, border-color .2s ease, transform .15s ease, box-shadow .2s ease;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            white-space: nowrap;
+        }
+
+        .btn:active { transform: translateY(1px); }
+
+        .btn-primary {
+            background: var(--primary);
+            color: #FFFFFF;
+            box-shadow: 0 8px 16px -10px rgba(98, 63, 39, .9);
+        }
+
+        .btn-primary:hover { background: var(--primary-hover); }
+
+        .btn-danger {
+            background: #F8E9E3;
+            color: var(--danger);
+            border-color: #E8C3B6;
+        }
+
+        .btn-danger:hover {
+            background: var(--danger);
+            border-color: var(--danger);
+            color: #FFFFFF;
+        }
+
+        .btn-outline {
+            background: transparent;
+            border-color: var(--line);
+            color: var(--ink);
+        }
+
+        .btn-outline:hover { background: rgba(176, 138, 62, .12); }
+
+        .btn-full {
+            flex: 1;
+            justify-content: center;
+            width: 100%;
+        }
+
+        /* ---------- Статус-бар ---------- */
+        .status-bar {
+            grid-area: foot;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            padding: 12px 4px 0;
+            font-size: 13px;
+            color: var(--muted);
+            border-top: 1px solid var(--line);
+        }
+
+        .status-bar::before {
+            content: "";
+            flex-shrink: 0;
+            width: 9px;
+            height: 9px;
+            border-radius: 50%;
+            background: var(--moss);
+            box-shadow: 0 0 0 0 rgba(90, 125, 84, .55);
+            animation: pulse 2.4s ease-out infinite;
+        }
+
+        @keyframes pulse {
+            0%   { box-shadow: 0 0 0 0 rgba(90, 125, 84, .5); }
+            70%  { box-shadow: 0 0 0 9px rgba(90, 125, 84, 0); }
+            100% { box-shadow: 0 0 0 0 rgba(90, 125, 84, 0); }
+        }
+
+        /* ================= АДАПТИВ ================= */
+        @media (max-width: 960px) {
+            .app-container[style*="flex"] {
+                grid-template-columns: minmax(0, 1fr);
+                grid-template-rows: auto;
+                grid-template-areas: "head" "nav" "main" "biz" "foot";
+                gap: 16px;
+            }
+
+            .tabs-container {
+                flex-direction: row;
+                gap: 4px;
+                padding: 8px;
+                overflow-x: auto;
+                scrollbar-width: thin;
+            }
+
+            .tabs-container::before { display: none; }
+            .tab-btn { width: auto; flex-shrink: 0; padding: 10px 14px; font-size: 14px; }
+
+            .business-buttons { flex-direction: row; flex-wrap: wrap; align-items: center; }
+            .business-buttons::before { flex: 0 0 100%; }
+            .business-buttons .btn-primary { flex: 1 1 220px; width: auto; }
+        }
+
+        @media (max-width: 720px) {
+            .login-card { padding: 34px 22px 28px; }
+            .auth-toggle::before { font-size: 26px; }
+            .top-header { flex-direction: column; align-items: flex-start; padding: 16px 18px; }
+            .user-info { width: 100%; justify-content: space-between; flex-wrap: wrap; }
+            .main-card { padding: 14px; grid-template-columns: minmax(0, 1fr); }
+            .search-row, .action-buttons, .table-wrapper { grid-column: 1; }
+            .search-row { grid-row: 1; flex-wrap: wrap; gap: 8px; }
+            .search-row input { min-width: 100%; }
+            .action-buttons { grid-row: 2; }
+            .action-buttons { min-width: 0; }
+            .action-buttons .btn-full { flex: 1 1 0; min-width: 0; padding: 11px 8px; font-size: 13px; white-space: normal; text-align: center; }
+            .table-wrapper { grid-row: 3; max-height: 60vh; }
+            .business-buttons { flex-direction: column; align-items: stretch; }
+            .business-buttons .btn-primary { flex: none; width: 100%; }
+            th, td { padding: 12px 13px; }
+        }
+
+        @media (prefers-reduced-motion: reduce) {
+            *, *::before, *::after {
+                animation: none !important;
+                transition: none !important;
+            }
+        }
+    </style>
+</head>
+<body>
+
+    <!-- ЭКРАН АВТОРИЗАЦИИ / РЕГИСТРАЦИИ -->
+    <div class="login-wrapper" id="loginScreen">
+        <div class="login-card">
+            <div class="auth-toggle">
+                <button class="auth-toggle-btn active" id="loginTabBtn" onclick="switchAuthMode('login')">Вход</button>
+                <button class="auth-toggle-btn" id="registerTabBtn" onclick="switchAuthMode('register')">Регистрация</button>
+            </div>
+
+            <!-- Форма входа -->
+            <form id="loginForm" class="auth-form active" onsubmit="handleLogin(event)">
+                <div class="form-group">
+                    <label>Логин:</label>
+                    <input type="text" id="loginInput" required placeholder="Введите логин">
+                </div>
+                <div class="form-group">
+                    <label>Пароль:</label>
+                    <input type="password" id="passwordInput" required placeholder="Введите пароль">
+                </div>
+                <button type="submit" class="btn btn-primary btn-full">Войти</button>
+            </form>
+
+            <!-- Форма регистрации -->
+            <form id="registerForm" class="auth-form" onsubmit="handleRegister(event)">
+                <div class="form-group">
+                    <label>Логин:</label>
+                    <input type="text" id="regLoginInput" required placeholder="Придумайте логин">
+                </div>
+                <div class="form-group">
+                    <label>Пароль:</label>
+                    <input type="password" id="regPasswordInput" required placeholder="Придумайте пароль">
+                </div>
+                <div class="form-group">
+                    <label>Роль в системе:</label>
+                    <select id="regRoleInput">
+                        <option value="user">Пользователь</option>
+                        <option value="admin">Администратор</option>
+                    </select>
+                </div>
+                <button type="submit" class="btn btn-primary btn-full">Зарегистрироваться</button>
+            </form>
+        </div>
+    </div>
+
+    <!-- ОСНОВНОЙ ИНТЕРФЕЙС ПРИЛОЖЕНИЯ -->
+    <div class="app-container" id="appScreen">
+        <!-- Шапка -->
+        <div class="top-header">
+            <h1>Система управления языковой школой</h1>
+            <div class="user-info">
+                <span id="roleLabel">Роль: Администратор</span>
+                <button class="btn btn-outline" onclick="logout()">Выйти</button>
+            </div>
+        </div>
+
+        <!-- Вкладки -->
+        <div class="tabs-container" id="tabsHeader"></div>
+
+        <!-- Главная карточка -->
+        <div class="main-card">
+            <div class="search-row">
+                <label>🔍 Поиск:</label>
+                <input type="text" id="searchInput" placeholder="Быстрый поиск по записям..." oninput="filterTable()">
+            </div>
+
+            <div class="table-wrapper">
+                <table id="dataTable">
+                    <thead id="tableHead"></thead>
+                    <tbody id="tableBody"></tbody>
+                </table>
+            </div>
+
+            <!-- Кнопки управления таблицей (Только для Админа) -->
+            <div class="action-buttons admin-only" id="tableActions">
+                <button class="btn btn-primary btn-full" onclick="addRecord()">➕ Добавить запись</button>
+                <button class="btn btn-danger btn-full" onclick="deleteRecord()">🗑 Удалить строку</button>
+            </div>
+        </div>
+
+        <!-- Бизнес-операции (Только для Админа) -->
+        <div class="business-buttons admin-only" id="businessActions">
+            <button class="btn btn-primary btn-full" onclick="processPayment()">💳 Пробить чек студенту</button>
+            <button class="btn btn-primary btn-full" onclick="enrollStudent()">👥 Зачислить в группу</button>
+        </div>
+
+        <!-- Подвал -->
+        <div class="status-bar" id="statusBar">
+            Система активна
+        </div>
+    </div>
+
+    <script>
+        // База пользователей
+        const usersDB = {
+            "admin": { password: "admin", role: "admin", name: "Администратор" },
+            "user": { password: "user", role: "user", name: "Пользователь" }
+        };
+
+        // Данные системы (на русском языке)
+        const schema = {
+            students: {
+                title: "Студенты",
+                headers: ["ID", "ФИО", "Телефон", "Баланс (руб.)"],
+                data: [
+                    [1, "Иванов Алексей Сергеевич", "+7 (999) 123-45-67", 4500],
+                    [2, "Смирнова Елена Васильевна", "+7 (999) 987-65-43", 12000],
+                    [3, "Кузнецов Дмитрий Павлович", "+7 (999) 555-33-22", 0]
+                ]
+            },
+            teachers: {
+                title: "Преподаватели",
+                headers: ["ID", "ФИО", "Телефон", "Опыт (лет)"],
+                data: [
+                    [1, "Петрова Анна Михайловна", "+7 (911) 222-33-44", 7],
+                    [2, "Соколов Игорь Владимирович", "+7 (922) 333-44-55", 5],
+                    [3, "Миллер Ольга Николаевна", "+7 (933) 444-55-66", 10]
+                ]
+            },
+            courses: {
+                title: "Курсы",
+                headers: ["ID", "Название курса", "Язык обучения", "Цена (руб.)"],
+                data: [
+                    [1, "Английский язык (B1 Intermediate)", "Английский", 6500],
+                    [2, "Разговорный китайский для начинающих", "Китайский", 8000],
+                    [3, "Немецкий интенсив (A2)", "Немецкий", 7000]
+                ]
+            },
+            classrooms: {
+                title: "Кабинеты",
+                headers: ["ID", "Номер кабинета", "Вместимость"],
+                data: [
+                    [1, "Кабинет №101 (Лингафонный)", 12],
+                    [2, "Кабинет №102 (Мультимедийный)", 15],
+                    [3, "Кабинет №205 (Стандартный)", 10]
+                ]
+            },
+            study_groups: {
+                title: "Учебные группы",
+                headers: ["ID", "Название группы", "ID курса", "ID преподавателя"],
+                data: [
+                    [1, "Английский B1 (Вт/Чт)", 1, 1],
+                    [2, "Китайский Клуб (Ср/Пт)", 2, 2]
+                ]
+            },
+            enrollments: {
+                title: "Зачисления",
+                headers: ["ID", "ID студента", "ID группы"],
+                data: [
+                    [1, 1, 1],
+                    [2, 2, 2]
+                ]
+            },
+            payments: {
+                title: "Оплаты и чеки",
+                headers: ["ID", "ID студента", "Сумма (руб.)", "Дата и время", "Статус"],
+                data: [
+                    [1, 1, 4500, "2026-06-01 10:30", "Оплачено"],
+                    [2, 2, 12000, "2026-06-02 14:15", "Оплачено"]
+                ]
+            },
+            users: {
+                title: "Пользователи",
+                headers: ["ID", "Логин", "Роль в системе"],
+                data: [
+                    [1, "admin", "Администратор"],
+                    [2, "user", "Пользователь"]
+                ]
+            }
+        };
+
+        let currentUser = null;
+        let currentTab = "students";
+        let selectedRowIndex = null;
+
+        // Переключение между формой Входа и Регистрации
+        function switchAuthMode(mode) {
+            const loginForm = document.getElementById("loginForm");
+            const registerForm = document.getElementById("registerForm");
+            const loginTabBtn = document.getElementById("loginTabBtn");
+            const registerTabBtn = document.getElementById("registerTabBtn");
+
+            if (mode === 'login') {
+                loginForm.classList.add("active");
+                registerForm.classList.remove("active");
+                loginTabBtn.classList.add("active");
+                registerTabBtn.classList.remove("active");
+            } else {
+                loginForm.classList.remove("active");
+                registerForm.classList.add("active");
+                loginTabBtn.classList.remove("active");
+                registerTabBtn.classList.add("active");
+            }
+        }
+
+        // Авторизация
+        function handleLogin(e) {
+            e.preventDefault();
+            const login = document.getElementById("loginInput").value;
+            const pass = document.getElementById("passwordInput").value;
+
+            if (usersDB[login] && usersDB[login].password === pass) {
+                currentUser = usersDB[login];
+                document.getElementById("loginScreen").style.display = "none";
+                document.getElementById("appScreen").style.display = "flex";
+                initApp();
+            } else {
+                alert("Неверный логин или пароль!");
+            }
+        }
+
+        // Регистрация нового пользователя
+        function handleRegister(e) {
+            e.preventDefault();
+            const login = document.getElementById("regLoginInput").value.trim();
+            const pass = document.getElementById("regPasswordInput").value;
+            const role = document.getElementById("regRoleInput").value;
+
+            if (usersDB[login]) {
+                alert("Пользователь с таким логином уже существует!");
+                return;
+            }
+
+            const roleTitle = role === "admin" ? "Администратор" : "Пользователь";
+
+            // Сохраняем пользователя
+            usersDB[login] = { password: pass, role: role, name: login };
+            schema.users.data.push([schema.users.data.length + 1, login, roleTitle]);
+
+            alert("Регистрация прошла успешно! Теперь вы можете войти.");
+            
+            // Очищаем поля и переключаем на вход
+            document.getElementById("regLoginInput").value = "";
+            document.getElementById("regPasswordInput").value = "";
+            switchAuthMode('login');
+            document.getElementById("loginInput").value = login;
+        }
+
+        // Выход из системы
+        function logout() {
+            currentUser = null;
+            document.getElementById("loginInput").value = "";
+            document.getElementById("passwordInput").value = "";
+            document.getElementById("appScreen").style.display = "none";
+            document.getElementById("loginScreen").style.display = "flex";
+        }
+
+        // Инициализация интерфейса
+        function initApp() {
+            renderTabs();
+            renderTable();
+            applyRolePermissions();
+        }
+
+        // Права доступа по роли
+        function applyRolePermissions() {
+            const adminElements = document.querySelectorAll(".admin-only");
+            const roleLabel = document.getElementById("roleLabel");
+            const statusBar = document.getElementById("statusBar");
+
+            if (currentUser.role === "admin") {
+                adminElements.forEach(el => el.style.display = "flex");
+                roleLabel.innerText = `Пользователь: ${currentUser.name} (Администратор)`;
+                statusBar.innerText = "Система активна | Режим: Администратор";
+            } else {
+                adminElements.forEach(el => el.style.display = "none");
+                roleLabel.innerText = `Пользователь: ${currentUser.name} (Пользователь)`;
+                statusBar.innerText = "Система активна | Режим: Пользователь (только просмотр)";
+            }
+        }
+
+        // Рендер вкладок
+        function renderTabs() {
+            const tabsHeader = document.getElementById("tabsHeader");
+            tabsHeader.innerHTML = "";
+
+            Object.keys(schema).forEach(key => {
+                const btn = document.createElement("button");
+                btn.className = `tab-btn ${key === currentTab ? 'active' : ''}`;
+                btn.innerText = schema[key].title;
+                btn.onclick = () => switchTab(key);
+                tabsHeader.appendChild(btn);
+            });
+        }
+
+        // Переключение вкладок
+        function switchTab(key) {
+            currentTab = key;
+            selectedRowIndex = null;
+            document.getElementById("searchInput").value = "";
+            renderTabs();
+            renderTable();
+        }
+
+        // Рендер таблицы
+        function renderTable() {
+            const head = document.getElementById("tableHead");
+            const body = document.getElementById("tableBody");
+            const tabData = schema[currentTab];
+
+            head.innerHTML = `<tr>${tabData.headers.map(h => `<th>${h}</th>`).join('')}</tr>`;
+
+            body.innerHTML = "";
+            tabData.data.forEach((row, idx) => {
+                const tr = document.createElement("tr");
+                tr.onclick = () => selectRow(tr, idx);
+                tr.innerHTML = row.map(cell => `<td>${cell}</td>`).join('');
+                body.appendChild(tr);
+            });
+        }
+
+        function selectRow(tr, idx) {
+            if (currentUser.role !== "admin") return;
+            const rows = document.querySelectorAll("#tableBody tr");
+            rows.forEach(r => r.style.backgroundColor = "");
+            tr.style.backgroundColor = "#E2D9CC";
+            selectedRowIndex = idx;
+        }
+
+        function filterTable() {
+            const text = document.getElementById("searchInput").value.toLowerCase();
+            const rows = document.querySelectorAll("#tableBody tr");
+
+            rows.forEach(r => {
+                const match = Array.from(r.children).some(td => td.innerText.toLowerCase().includes(text));
+                r.style.display = match ? "" : "none";
+            });
+        }
+
+        function addRecord() {
+            const tabData = schema[currentTab];
+            const newId = tabData.data.length ? Math.max(...tabData.data.map(d => d[0])) + 1 : 1;
+            const newRow = [newId, ...Array(tabData.headers.length - 1).fill("Новое значение")];
+            tabData.data.push(newRow);
+            renderTable();
+        }
+
+        function deleteRecord() {
+            if (selectedRowIndex === null) {
+                alert("Выберите строку для удаления!");
+                return;
+            }
+            schema[currentTab].data.splice(selectedRowIndex, 1);
+            selectedRowIndex = null;
+            renderTable();
+        }
+
+        function processPayment() {
+            const studentId = prompt("Введите ID студента:");
+            if (!studentId) return;
+            const amount = prompt("Введите сумму оплаты (руб.):");
+            if (!amount) return;
+
+            schema.payments.data.push([
+                schema.payments.data.length + 1,
+                parseInt(studentId),
+                parseFloat(amount),
+                new Date().toISOString().replace('T', ' ').substring(0, 16),
+                "Оплачено"
+            ]);
+
+            const student = schema.students.data.find(s => s[0] == studentId);
+            if (student) student[3] = parseFloat(student[3]) + parseFloat(amount);
+
+            alert("Чек успешно оформлен! Баланс студента пополнен.");
+            if (currentTab === "payments" || currentTab === "students") renderTable();
+        }
+
+        function enrollStudent() {
+            const studentId = prompt("Введите ID студента:");
+            if (!studentId) return;
+            const groupId = prompt("Введите ID группы:");
+            if (!groupId) return;
+
+            schema.enrollments.data.push([
+                schema.enrollments.data.length + 1,
+                parseInt(studentId),
+                parseInt(groupId)
+            ]);
+
+            alert("Студент успешно зачислен в группу!");
+            if (currentTab === "enrollments") renderTable();
+        }
+    </script>
+</body>
+</html>
